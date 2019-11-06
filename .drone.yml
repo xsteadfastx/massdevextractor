@@ -1,0 +1,55 @@
+---
+kind: pipeline
+name: default
+
+steps:
+
+  - name: set permissions
+    image: alpine:edge
+    commands:
+      - chown -Rv 1000:1000 .
+
+  - name: py37
+    image: xsteadfastx/tox-python:minimal
+    pull: true
+    environment:
+      TOX_WORK_DIR: /tmp/tox
+    commands:
+      - sudo apk add --no-cache gcc musl-dev
+      - tox -v -e py37
+
+  - name: flake8
+    image: xsteadfastx/tox-python:minimal
+    pull: true
+    environment:
+      TOX_WORK_DIR: /tmp/tox
+    commands:
+      - sudo apk add --no-cache gcc musl-dev
+      - tox -v -e flake8
+
+  - name: pylint
+    image: xsteadfastx/tox-python:minimal
+    pull: true
+    environment:
+      TOX_WORK_DIR: /tmp/tox
+    commands:
+      - sudo apk add --no-cache gcc musl-dev
+      - tox -v -e pylint
+
+  - name: mypy
+    image: xsteadfastx/tox-python:minimal
+    pull: true
+    environment:
+      TOX_WORK_DIR: /tmp/tox
+    commands:
+      - sudo apk add --no-cache gcc musl-dev
+      - tox -v -e mypy
+
+  - name: black
+    image: xsteadfastx/tox-python:minimal
+    pull: true
+    environment:
+      TOX_WORK_DIR: /tmp/tox
+    commands:
+      - sudo apk add --no-cache gcc musl-dev
+      - tox -v -e black-only-check
