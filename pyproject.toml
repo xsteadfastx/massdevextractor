@@ -11,12 +11,12 @@ click = "^7.0"
 beautifulsoup4 = "^4.8"
 lxml = "^4.4"
 requests = "^2.22"
-gazpacho = "^0.8.1"
 orjson = "^2.1"
 structlog = "^19.2"
 colorama = "^0.4.1"
 pandas = "^0.25.3"
 html5lib = "^1.0"
+requests-html = "^0.10.0"
 
 [tool.poetry.scripts]
 massdevextractor = "massdevextractor.__main__:entrypoint"

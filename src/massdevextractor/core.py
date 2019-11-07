@@ -1,4 +1,5 @@
 """Core module."""
+import asyncio
 import json
 import re
 from datetime import datetime
@@ -7,7 +8,7 @@ from urllib.parse import urljoin
 
 import orjson
 import pandas as pd
-from gazpacho import Soup, get
+from requests_html import HTMLSession
 from structlog import get_logger
 
 from massdevextractor import objects
@@ -23,31 +24,46 @@ def value_check(value: Union[int, str, None]) -> Optional[str]:
     return str(value)
 
 
-def get_film_overview() -> List[Soup]:
+def get_film_overview() -> List[str]:
     url = urljoin(BASE_URL, "print.php")
     LOGGER.debug("created_url", url=url)
-    html = get(url)
-    soup = Soup(html)
-    films = [film for film in soup.find("a") if "Film" in film.attrs["href"]]
+    session = HTMLSession()
+    results = session.get(url)
+    films = [film for film in results.html.links if "Film" in film]
     LOGGER.debug("got_films", films=films)
 
     return films
 
 
-def create_film_urls(films: List[Soup]) -> List[str]:
-    urls = [urljoin(BASE_URL, film.attrs["href"]) for film in films]
+def create_film_urls(films: List[str]) -> List[str]:
+    urls = [urljoin(BASE_URL, film) for film in films]
     LOGGER.debug("got_film_urls", urls=urls)
 
     return urls
 
 
+async def get_raw_film_data(url: str) -> str:
+    loop = asyncio.get_running_loop()
+    session = HTMLSession()
+    url = url.replace(" ", "%20")
+    LOGGER.info("getting_film", url=url)
+    result = await loop.run_in_executor(None, session.get, url)
+    return result.text
+
+
+async def gather_raw_film_data(film_url: List[str]) -> List[str]:
+    results = await asyncio.gather(*[get_raw_film_data(url) for url in film_url])
+    return results
+
+
 def get_film_data(films_urls: List[str]) -> List[pd.core.frame.DataFrame]:
     film_data: List[pd.core.frame.DataFrame] = []
-    for film in films_urls:
-        url = film.replace(" ", "%20")
-        LOGGER.info("getting_film", url=url)
+    LOGGER.info("getting_raw_film_data")
+    raw_texts = asyncio.run(gather_raw_film_data(films_urls))
+
+    for text in raw_texts:
         try:
-            tables = pd.read_html(url)
+            tables = pd.read_html(text)
             LOGGER.debug("got_film_data", data=tables)
         except ValueError:
             LOGGER.exception("no_table_found")
