@@ -2,7 +2,7 @@
 import json
 import re
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 from urllib.parse import urljoin
 
 import orjson
@@ -15,6 +15,12 @@ from massdevextractor import objects
 LOGGER = get_logger()
 
 BASE_URL = "https://www.digitaltruth.com/chart/"
+
+
+def value_check(value: Union[int, str, None]) -> Optional[str]:
+    if not value:
+        return None
+    return str(value)
 
 
 def get_film_overview() -> List[Soup]:
@@ -95,12 +101,12 @@ def create_objects(
             developers.append(
                 objects.Developer(
                     name=developer.developer,
-                    dilution=developer.dilution,
-                    iso=developer.iso,
-                    temp=developer.temp,
-                    thirtyfive=developer.thirtyfive,
-                    hundrettwenty=developer.hundrettwenty,
-                    sheet=developer.sheet,
+                    dilution=value_check(developer.dilution),
+                    iso=value_check(developer.iso),
+                    temp=value_check(developer.temp),
+                    thirtyfive=value_check(developer.thirtyfive),
+                    hundrettwenty=value_check(developer.hundrettwenty),
+                    sheet=value_check(developer.sheet),
                     notes=find_notes(developer.notes, notes),
                 )
             )

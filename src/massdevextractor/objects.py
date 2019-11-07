@@ -12,11 +12,11 @@ class Note:
 class Developer:
     name: str
     dilution: str
-    iso: int
+    iso: str
     temp: str
-    thirtyfive: Optional[Union[int, float, str]] = None
-    hundrettwenty: Optional[Union[int, float, str]] = None
-    sheet: Optional[Union[int, float, str]] = None
+    thirtyfive: Optional[str] = None
+    hundrettwenty: Optional[str] = None
+    sheet: Optional[str] = None
     notes: Optional[List[Note]] = None
 
 
