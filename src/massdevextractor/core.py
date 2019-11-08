@@ -133,9 +133,9 @@ def create_objects(
     return objects.Films(films=films, updated=datetime.utcnow())
 
 
-def write_json(films_object: objects.Films) -> None:
+def write_json(films_object: objects.Films, filename: str) -> None:
     data: bytes = orjson.dumps(films_object, option=orjson.OPT_SERIALIZE_DATACLASS)
-    with open("foo.json", "w") as f:
+    with open(filename, "w") as f:
         json.dump(json.loads(data), f, indent=4)
 
 
@@ -147,7 +147,7 @@ def get_notes() -> Dict[str, str]:
     return table.set_index(0).T.to_dict("records")[0]
 
 
-def main() -> None:
+def main(filename: str) -> None:
     LOGGER.info("getting_notes")
     notes = get_notes()
     LOGGER.debug("notes", data=notes)
@@ -161,4 +161,4 @@ def main() -> None:
     LOGGER.info("creating_films_object")
     films_object = create_objects(film_data, notes)
     LOGGER.info("write_json")
-    write_json(films_object)
+    write_json(films_object, filename)

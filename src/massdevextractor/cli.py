@@ -5,6 +5,7 @@ from massdevextractor import core
 
 
 @click.command()
-def main():
+@click.argument("filename", default="massdevchart.json", type=click.Path())
+def main(filename: str):
     """extract mass dev chart"""
-    core.main()
+    core.main(filename)
