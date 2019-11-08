@@ -126,8 +126,10 @@ def create_objects(
                     notes=find_notes(developer.notes, notes),
                 )
             )
+        developers.sort(key=lambda x: x.name)
         films.append(objects.Film(name=data.iloc[0].film, developers=developers))
 
+    films.sort(key=lambda x: x.name)
     return objects.Films(films=films, updated=datetime.utcnow())
 
 
