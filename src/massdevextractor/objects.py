@@ -1,3 +1,4 @@
+# pylint: disable=missing-module-docstring,missing-class-docstring
 from dataclasses import dataclass
 from datetime import datetime
 from typing import List, Optional
@@ -8,12 +9,13 @@ class Note:
     note: str
 
 
+# pylint: disable=too-many-instance-attributes
 @dataclass
 class Developer:
     name: str
-    dilution: str
-    iso: str
-    temp: str
+    dilution: Optional[str]
+    iso: Optional[str]
+    temp: Optional[str]
     thirtyfive: Optional[str] = None
     hundrettwenty: Optional[str] = None
     sheet: Optional[str] = None

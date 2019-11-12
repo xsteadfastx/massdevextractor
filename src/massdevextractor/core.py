@@ -87,7 +87,7 @@ def find_notes(
     if not note_string:
         return None
     matcher = re.compile(r"\[([a-zA-z0-9]+?)\]")
-    note_list: Optional[List[objects.Note]] = []
+    note_list: List[objects.Note] = []
     for match in matcher.findall(note_string):
         if match in notes.keys():
             LOGGER.info("found_note", note=match)
@@ -129,7 +129,9 @@ def create_objects(
 
 
 def write_json(films_object: objects.Films, filename: str) -> None:
-    data: bytes = orjson.dumps(films_object, option=orjson.OPT_SERIALIZE_DATACLASS)
+    data: bytes = orjson.dumps(
+        films_object, option=orjson.OPT_SERIALIZE_DATACLASS  # type: ignore
+    )
     with open(filename, "w") as output_file:
         json.dump(json.loads(data), output_file, indent=4)
 
