@@ -1,14 +1,14 @@
 """Core module."""
-import asyncio
 import json
 import re
 from datetime import datetime
+from functools import partial
 from typing import Dict, List, Optional, Union
 from urllib.parse import urljoin
 
 import orjson
 import pandas as pd
-from requests_html import HTMLSession
+from requests_html import AsyncHTMLSession, HTMLSession
 from structlog import get_logger
 
 from massdevextractor import objects
@@ -16,6 +16,8 @@ from massdevextractor import objects
 LOGGER = get_logger()
 
 BASE_URL = "https://www.digitaltruth.com/chart/"
+
+ASESSION = AsyncHTMLSession()
 
 
 def value_check(value: Union[int, str, None]) -> Optional[str]:
@@ -43,23 +45,16 @@ def create_film_urls(films: List[str]) -> List[str]:
 
 
 async def get_raw_film_data(url: str) -> str:
-    loop = asyncio.get_running_loop()
-    session = HTMLSession()
     url = url.replace(" ", "%20")
     LOGGER.info("getting_film", url=url)
-    result = await loop.run_in_executor(None, session.get, url)
+    result = await ASESSION.get(url)
     return result.text
-
-
-async def gather_raw_film_data(film_url: List[str]) -> List[str]:
-    results = await asyncio.gather(*[get_raw_film_data(url) for url in film_url])
-    return results
 
 
 def get_film_data(films_urls: List[str]) -> List[pd.core.frame.DataFrame]:
     film_data: List[pd.core.frame.DataFrame] = []
     LOGGER.info("getting_raw_film_data")
-    raw_texts = asyncio.run(gather_raw_film_data(films_urls))
+    raw_texts = ASESSION.run(*[partial(get_raw_film_data, url) for url in films_urls])
 
     for text in raw_texts:
         try:
