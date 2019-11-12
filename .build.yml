@@ -1,9 +1,12 @@
 ---
 image: alpine/3.10
+packages:
+  - docker
 tasks:
   - prepare: |
-      sudo apk add docker
+      set -ex
       sudo nohup dockerd --bip 172.18.0.1/16 &
+      ps faux
       sleep 10
       sudo docker pull xsteadfastx/tox-python:full
       pwd

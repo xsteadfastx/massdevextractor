@@ -130,8 +130,8 @@ def create_objects(
 
 def write_json(films_object: objects.Films, filename: str) -> None:
     data: bytes = orjson.dumps(films_object, option=orjson.OPT_SERIALIZE_DATACLASS)
-    with open(filename, "w") as f:
-        json.dump(json.loads(data), f, indent=4)
+    with open(filename, "w") as output_file:
+        json.dump(json.loads(data), output_file, indent=4)
 
 
 def get_notes() -> Dict[str, str]:
