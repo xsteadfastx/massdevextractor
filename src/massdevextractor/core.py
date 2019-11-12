@@ -1,4 +1,5 @@
 """Core module."""
+# pylint: disable=missing-function-docstring
 import json
 import re
 from datetime import datetime
@@ -93,8 +94,7 @@ def find_notes(
             note_list.append(objects.Note(note=notes[match]))
     if note_list:
         return note_list
-    else:
-        return None
+    return None
 
 
 def create_objects(
