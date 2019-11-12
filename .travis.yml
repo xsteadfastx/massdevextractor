@@ -26,4 +26,4 @@ script:
     -e TRAVIS_REPO_SLUG
     -e TRAVIS_TAG
     -e TRAVIS_OS_NAME
-    xsteadfastx/tox-python:minimal /bin/sh -c "sudo apk add --no-cache gcc musl-dev; tox -v -e $TOXENV"
+    xsteadfastx/tox-python:full  /bin/sh -c "sudo apt-get install -y gcc; tox -v -e $TOXENV"
