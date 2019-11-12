@@ -4,10 +4,11 @@ packages:
   - docker
 tasks:
   - prepare: |
-      set -ex
-      sudo nohup dockerd --bip 172.18.0.1/16 &
-      ps faux
+      sudo mount -t tmpfs -o size=4G /dev/null /dev/shm
+      sleep 2
+      sudo rc-service cgroups start
+      sudo nohup dockerd --bip 172.18.0.1/16 </dev/null >/dev/null 2>&1 &
       sleep 10
       sudo docker pull xsteadfastx/tox-python:full
-      pwd
-      ls -lah
+  - test: |
+      sudo docker run --rm -t -v $PWD/massdevextractor:/data -w /data -e TOX_WORK_DIR=/tmp xsteadfastx/tox-python:full /bin/sh -c "sudo apt-get update; sudo apt-get install -y gcc; tox -v"
